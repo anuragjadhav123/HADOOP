@@ -21,7 +21,7 @@ cd .ssh
 cat id_rsa.pub >> authorized_keys
 ssh localhost
 
-#Disable IPV6
+#Disable IPV6  # this is not Applicable for Hadoop-3 Skip for Hadoop-3 but Needed for Hadoop-2
 sudo nano /etc/sysctl.conf
 net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
@@ -143,6 +143,7 @@ hdfs dfs -put hadoop-3.3.0.tar.gz /user/hduser
 yarn jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-*examples*.jar pi 5 10
 
 
-WebUI
+# for WebUI go to browser (publicip/NN:9870)
+
 NN:9870
 
