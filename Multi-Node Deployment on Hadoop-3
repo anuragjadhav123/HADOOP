@@ -235,10 +235,10 @@ hdfs namenode -format
 
 
 # Start the cluster
-start-dfs.sh
-start-yarn.sh
+start-dfs.sh         // run this on nn
+start-yarn.sh       // run this on resource manager
  
-dsh -a jps
+dsh -a jps         // on namenode
 
 
 # run on name node
@@ -249,4 +249,9 @@ hdfs dfs -ls
 hdfs dfs -ls -R
 
 yarn jar /usr/local/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar pi  5 10
+
+# for WebUI
+nn(publicip):9870
+rm(publicip):8088
+
 
