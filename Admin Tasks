@@ -60,7 +60,7 @@ nano mapred-site.xml
 
 hadoop distcp /user/hduser/jinga.xml s3a://<bucket-name>/
 
-hadoop distcp hdfs:///user/hduser/jinga.xml s3a://<bucket-name>/
+hadoop distcp hdfs://user/hduser/jinga.xml s3a://<bucket-name>/
 
 
 -----***** Creating snapshots ****----
