@@ -1,0 +1,102 @@
+####################################
+	CLOUDERA DIRECTOR
+####################################
+
+
+
+Create VPC : VPC with a single Public Subnet
+
+Create a security group with SSH and All Traffic from your desired sources
+
+Create a ssh keypair or use existing one
+
+Create a security group in your VPC
+Edit inbound rules
+SSH    			0.0.0.0/0
+Alltraffic		0.0.0.0/0
+
+Launch an EC2- instance for cloudera director
+(Cloudera recommends you use communty AMI)
+
+For this installation we are using : Red Hat Enterprise Linux 7.3 (HVM), SSD Volume Type - ami-b63769a1
+Note down the AMI id of ami you decided to take. For eg : ami-b63769a1
+
+Use c3.large or c4.large ; storage minimum 8GB
+Select the security group you created earlier
+
+SSH to your instance
+
+
+-----**** Install Oracle java ****-----
+
+
+sudo yum install wget
+
+sudo yum install nano
+
+
+wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u181-b13/96a7b8442fe848ef90c96a2fad6ed6d1/jdk-8u181-linux-x64.rpm"
+
+sudo yum localinstall jdk-8u161-linux-x64.rpm
+
+export JAVA_HOME=/usr/java/1.8.0_161
+export PATH=$PATH:$JAVA_HOME/bin
+
+
+-----**** Add the Cloudera Director repository to the package manager ****-----
+
+cd /etc/yum.repos.d/
+sudo wget "http://archive.cloudera.com/director/redhat/7/x86_64/director/cloudera-director.repo"
+
+
+-----**** Install Cloudera Director server ****-----
+
+sudo yum install cloudera-director-server cloudera-director-client
+
+
+-----**** Start the Cloudera Director server ****-----
+
+sudo service cloudera-director-server start
+
+
+-----**** Save the existing firewall rules and disable the firewall ****-----
+
+sudo systemctl disable firewalld
+sudo systemctl stop firewalld
+ sudo service firewalld status
+
+
+-----**** Connect to Cloudera Director ****-----
+
+In Browser
+public-ip/dns:7189
+
+
+## Cloudera Director currently supports only RHEL/CentOS (64 bit) for its CM deployment on AWS
+So select proper centos/Redhat ami for cloudera manager
+For this deployment we have selected EC2 Red Hat Enterprise Linux 7.3 (HVM), SSD Volume Type - ami-b63769a1
+
+
+## In the Add Cloudera Manager screen, click Cloudera Manager Configurations
+
+Select Host monitor 
+In name and value
+firehose_heapsize and 1073741824 
+
+Select Service monitor 
+firehose_heapsize and 1073741824
+
+
+
+
+#######################################################################################
+
+If you are facing issues restart cloudera director
+
+sudo service cloudera-director-server restart
+
+
+
+
+
+
