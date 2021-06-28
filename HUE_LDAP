@@ -1,0 +1,128 @@
+################################################################
+		Hue authentication with LDAP
+################################################################
+
+
+
+---** Install LDAP server **---
+
+launch instance and connect
+
+sudo apt-get update
+
+sudo apt install slapd ldap-utils -y
+
+systemctl status slapd
+
+
+---** Configure ldap **---
+
+sudo dpkg-reconfigure slapd
+
+omit - No
+doamin name - hadoop.com
+organisation name - cloudera
+db backend - mdb
+remove database when slapd is purged - no
+Move old database - yes
+use ldap v2 - no
+
+
+sudo nano /etc/ldap/ldap.conf
+
+BASE    dc=hadoop,dc=com
+URI     ldap://localhost
+
+
+ldapsearch -x
+
+ ---** Install Phpldapadmin **---
+
+sudo apt install phpldapadmin -y 
+
+-- Connect to phpldapadmin
+ 
+In browser - dns/phpldapadmin
+
+
+---** Congigure phpldapadmin **---
+
+sudo nano /etc/phpldapadmin/config.php
+
+search - servers->
+
+uncomment -> $servers->setValue('server','port',389);
+$servers->setValue('server','base',array('dc=hadoop,dc=com'));
+
+search -> $servers->setValue('login','anon_bind',true);
+make it to false
+
+search -> $config->custom->appearance['hide_template_warning'] = false;
+make it to true
+
+save and exit
+
+-- Connect to phpldapadmin
+ 
+In browser - dns/phpldapadmin
+
+Create groups and users
+
+create an ou by name hue
+create a posix group under it by name hueusers
+ 
+create some users under this group
+
+(Make sure uids dont match with linux uids)
+
+
+----*** Configure hue to work with LDAP ***----
+
+-- Install Ldap client on machine on which hue is running
+
+sudo apt-get install libpam-ldap nscd -y
+
+URI - ldap://ip-10-0-0-70.ec2.internal
+distinguished name - dc=hadoop,dc=com
+ldap version - 3
+make local root database admin - yes
+ldap reuire database login - no 
+ldap account for root - cn=admin,dc=hadoop,dc=com
+ldap root passwor - password-set
+
+sudo auth-client-config -t nss -p lac_ldap
+
+sudo nano /etc/nsswitch.conf
+(it should show ldap)
+
+sudo nano /etc/pam.d/common-session
+session required    pam_mkhomedir.so skel=/etc/skel umask=0022
+
+sudo /etc/init.d/nscd restart
+
+getent passwd
+
+
+###
+
+On Cm - Hue - Configuration
+
+search -> authentication -> desktop.auth.backend.LdapBackend
+search -> ldap_url - > ldap://ip-10-0-0-70.ec2.internal:389
+search -> username_pattern -> uid=<username>,ou=hue,dc=hadoop,dc=com
+search -> search_bind - tick 
+search -> base_dn -> dc=hadoop,dc=com
+search -> bind_dn -> cn=admin,dc=hadoop,dc=com
+search -> bind_password -> password-set
+search -> user_filter -> objectClass=*
+search -> user_name_attr -> uid
+search -> group_filter -> objectClass=posixGroup
+
+Restart Hue (tick - redeploy client configurations)
+
+Login to Hue web ui
+
+enter ldap creds 
+
+
+
